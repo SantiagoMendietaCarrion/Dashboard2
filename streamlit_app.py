@@ -30,7 +30,7 @@ st.set_page_config(page_title="Purchase prediction",
 working_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Cargar el modelo de machine learning
-best_pcp_model2 = pickle.load(open(f'{working_dir}/saved_models/best_pcp_model2.pkl', 'rb'))
+best_svm_model2 = pickle.load(open(f'{working_dir}/saved_models/best_svm_model2.pkl', 'rb'))
 
 # Barra lateral para la navegación
 with st.sidebar:
@@ -64,13 +64,13 @@ if selected == '1. Ingreso de archivos':
   # Carga del archivo csv
   ##ss.loaded_csv = st.file_uploader("Escoja el archivo CSV")
   ##ss.loaded_csv=uploader("Escoja el archivo CSV", key="chunk_uploader", chunk_size=21)
-  ss.loaded_csv = st.file_uploader("Escoja el archivo CSV", accept_multiple_files=True)
+  ss.loaded_csv = st.file_uploader("Escoja el archivo CSV", type='csv', accept_multiple_files=True)
 
   # Asignación condicional del archivo csv a una nueva variable
   if ss.loaded_csv is not None:
     ss.uploaded_file = ss.loaded_csv
 
-  # Botón para visualizar el dataset inicial 
+  # Botón para guardar el dataset inicial 
   if st.button('Guardar el dataset'):
 
     # Asignar a una nueva variable
