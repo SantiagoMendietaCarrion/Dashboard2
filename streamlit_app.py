@@ -606,9 +606,13 @@ if selected == "5. Resultados obtenidos":
     ss.transacciones_totales_3_meses = ""
   if "cambio_transacciones_ultimo_trimestre" not in ss:
     ss.cambio_transacciones_ultimo_trimestre = ""
-  if "productos_vendidos_3_meses" not in ss:
+  if "cantidad_productos_vendidos_3_meses" not in ss:
     ss.productos_vendidos_3_meses = ""
-  if "cambio_productos_vendidos_ultimo_trimestre" not in ss:
+  if "cambio_cantidad_productos_vendidos_ultimo_trimestre" not in ss:
+    ss.cambio_productos_vendidos_ultimo_trimestre = ""
+  if "tipos_productos_vendidos_3_meses" not in ss:
+    ss.productos_vendidos_3_meses = ""
+  if "cambio_tipos_productos_vendidos_ultimo_trimestre" not in ss:
     ss.cambio_productos_vendidos_ultimo_trimestre = ""
   if "clientes_3_meses" not in ss:
     ss.clientes_3_meses = ""
@@ -687,19 +691,22 @@ if selected == "5. Resultados obtenidos":
     # Resultados generales últimos 3 meses del dataset inicial parte 1
     ventas_totales_3_meses=data9_part1_3meses['Revenue'].sum()  # Ventas totales últimos 3 meses
     transacciones_totales_3_meses=len(data9_part1_3meses)       # Cantidad de transacciones (filas) últimos 3 meses
-    productos_vendidos_3_meses=len(data9_part1_3meses.groupby('Description'))  # Productos vendidos en los últimos 3 meses
+    cantidad_productos_vendidos_3_meses=data9_part1_3meses['Quantity'].sum()   # Productos vendidos en los últimos 3 meses
+    tipos_productos_vendidos_3_meses=len(data9_part1_3meses.groupby('Description'))  # Tipos productos vendidos en los últimos 3 meses
     clientes_3_meses=len(data9_part1_3meses.groupby('CustomerID'))              # Número de clientes que han comprado en los últimos 3 meses
 
     # Resultados generales últimos 6 meses del dataset inicial parte 1
     ventas_totales_6_meses=data9_part1_6meses['Revenue'].sum()  # Ventas totales últimos 6 meses
     transacciones_totales_6_meses=len(data9_part1_6meses)       # Cantidad de transacciones (filas) últimos 6 meses
-    productos_vendidos_6_meses=len(data9_part1_6meses.groupby('Description'))  # Productos vendidos en los últimos 6 meses
+    cantidad_productos_vendidos_6_meses=data9_part1_6meses['Quantity'].sum()   # Productos vendidos en los últimos 6 meses
+    tipos_productos_vendidos_6_meses=len(data9_part1_6meses.groupby('Description'))  # Productos vendidos en los últimos 6 meses
     clientes_6_meses=len(data9_part1_6meses.groupby('CustomerID'))              # Número de clientes que han comprado en los últimos 6 meses
 
     # Resultados de cambio porcentual del último trimestre con respecto al anterior
     cambio_ventas_ultimo_trimestre=round(((ventas_totales_3_meses-ventas_totales_6_meses)/ventas_totales_6_meses)*100, 2)  # Cambio de las ventas totales últimos 3 meses
     cambio_transacciones_ultimo_trimestre=round(((transacciones_totales_3_meses-transacciones_totales_6_meses)/transacciones_totales_6_meses)*100, 2)  # Cambio de la cantidad de transacciones (filas) últimos 3 meses
-    cambio_productos_vendidos_ultimo_trimestre=round(((productos_vendidos_3_meses-productos_vendidos_6_meses)/productos_vendidos_6_meses)*100, 2)  # Cambio de productos vendidos en los últimos 3 meses
+    cambio_cantidad_productos_vendidos_ultimo_trimestre=round(((cantidad_productos_vendidos_3_meses-cantidad_productos_vendidos_6_meses)/cantidad_productos_vendidos_6_meses)*100, 2)  # Cambio de cantidad de productos vendidos en los últimos 3 meses
+    cambio_tipos_productos_vendidos_ultimo_trimestre=round(((tipos_productos_vendidos_3_meses-tipos_productos_vendidos_6_meses)/tipos_productos_vendidos_6_meses)*100, 2)  # Cambio de tipo de productos vendidos en los últimos 3 meses
     cambio_clientes_ultimo_trimestre=round(((clientes_3_meses-clientes_6_meses)/clientes_6_meses)*100, 2)             # Cambio del número de clientes que han comprado en los últimos 3 meses
 
     #### Grafico Date vs monetary_value (sum) #####  
@@ -955,28 +962,39 @@ if selected == "5. Resultados obtenidos":
     ax10.legend(loc='upper center', ncols=2)
     ax10.set_ylim(0, 140000)
 
-    #### Mejores productos últimos 3 meses #####   
-    # Dataframe mejores productos
-    data9_part1_mejores_productos=data9_part1_3meses[['Description', 'Quantity', 'Revenue']].groupby('Description').sum().sort_values(by='Quantity', ascending=False)
-    data9_part1_mejores_productos.reset_index(inplace=True)
-    data9_part1_total_revenue=data9_part1_mejores_productos['Revenue'].sum()
-    data9_part1_mejores_productos['Porcentaje']=data9_part1_mejores_productos['Revenue'].apply(lambda x: round(x/data9_part1_total_revenue*100,2))
-    data9_part1_mejores_productos=data9_part1_mejores_productos.sort_values(by='Porcentaje', ascending=False)
+    #### Mejores productos últimos 3 meses #####  
 
-    # CInco mejores productos en función de las venta totales de los últimos 3 meses
-    data9_part1_mejores_productos_head=data9_part1_mejores_productos[['Description','Porcentaje']].head(5)
-    data9_part1_mejores_productos_head2=data9_part1_mejores_productos_head.sort_values(by='Porcentaje', ascending=True)
+    # Seleccionar los clientes que se predicen que sí van a comprar
+    data9_part1_3meses_predicted1=data9_part1_3meses[data9_part1_3meses['CustomerID'].isin(purchase_predicted1['CustomerID'])]
+
+    # Dataframe mejores productos
+    data9_part1_mejores_productos=data9_part1_3meses_predicted1[['Description', 'Quantity', 'Revenue']].groupby('Description').sum()
+    data9_part1_mejores_productos.reset_index(inplace=True)
+    data9_part1_total_quantity=data9_part1_mejores_productos['Quantity'].sum()
+    data9_part1_total_revenue=data9_part1_mejores_productos['Revenue'].sum()
+    data9_part1_mejores_productos['Porcentaje_Quantity']=data9_part1_mejores_productos['Quantity'].apply(lambda x: round((x/data9_part1_total_quantity)*100,4))
+    data9_part1_mejores_productos['Porcentaje_Revenue']=data9_part1_mejores_productos['Revenue'].apply(lambda x: round((x/data9_part1_total_revenue)*100,6))
+
+    # Ordenar dataframe de acuerdo a la cantidad
+    data9_part1_mejores_productos_quantity=data9_part1_mejores_productos.copy()
+    data9_part1_mejores_productos_quantity.sort_values(by='Quantity', ascending=False, inplace=True)
+    data9_part1_mejores_productos_quantity.reset_index(drop=True, inplace=True)
+
+    # Cinco mejores productos en función de la cantidad de productos de los últimos 3 meses
+    data9_part1_mejores_productos_quantity_head=data9_part1_mejores_productos_quantity[['Description','Quantity','Porcentaje_Quantity']].head(5)
+    data9_part1_mejores_productos_quantity_head2=data9_part1_mejores_productos_quantity_head.sort_values(by='Porcentaje_Quantity', ascending=True)
+    data9_part1_mejores_productos_quantity_head2['Porcentaje_Quantity']=data9_part1_mejores_productos_quantity_head2['Porcentaje_Quantity'].apply(lambda x: round(x,2))
 
     # Gráfico de barras de los mejores productos 
     fig8, ax8 = plt.subplots(layout='constrained', figsize=(10,5))
     colores=['lightsteelblue', 'cornflowerblue', 'royalblue', 'mediumblue', 'darkblue']
-    x=data9_part1_mejores_productos_head2['Porcentaje']
-    y=data9_part1_mejores_productos_head2['Description']
+    x=data9_part1_mejores_productos_quantity_head2['Porcentaje']
+    y=data9_part1_mejores_productos_quantity_head2['Description']
     ax8.barh(y=y,  width=x, color=colores)
     ax8.bar_label(ax8.containers[0], padding=3)
-    ax8.set_xlabel('Total sales (%)')
+    ax8.set_xlabel('Quantity Purchase predicted 1')
     ax8.set_ylabel('Product names')
-    ax8.set_title('Products vs Total sales (%) SVM Model-Escenario 2-Sin balanceo')
+    ax8.set_title('Products vs Quantity SVM Model-Escenario 2-Sin balanceo')
     ax8.set_xlim(0,2.25)
 
     # Asignación de las variables obtenidas a las variables st.session_state
@@ -984,8 +1002,10 @@ if selected == "5. Resultados obtenidos":
     ss.cambio_ventas_ultimo_trimestre = cambio_ventas_ultimo_trimestre
     ss.transacciones_totales_3_meses = transacciones_totales_3_meses
     ss.cambio_transacciones_ultimo_trimestre = cambio_transacciones_ultimo_trimestre
-    ss.productos_vendidos_3_meses = productos_vendidos_3_meses
-    ss.cambio_productos_vendidos_ultimo_trimestre = cambio_productos_vendidos_ultimo_trimestre
+    ss.cantidad_productos_vendidos_3_meses = cantidad_productos_vendidos_3_meses
+    ss.cambio_cantidad_productos_vendidos_ultimo_trimestre = cambio_cantidad_productos_vendidos_ultimo_trimestre
+    ss.tipos_productos_vendidos_3_meses = tipos_productos_vendidos_3_meses
+    ss.cambio_tipos_productos_vendidos_ultimo_trimestre = cambio_tipos_productos_vendidos_ultimo_trimestre
     ss.clientes_3_meses = clientes_3_meses
     ss.cambio_clientes_ultimo_trimestre = cambio_clientes_ultimo_trimestre
     ss.fig4 = fig4
@@ -1010,10 +1030,10 @@ if selected == "5. Resultados obtenidos":
     with c1:
       st.subheader("Ventas totales (últimos 3 meses)", divider=True)
     with c2:
-      st.subheader("Ventas/Valor_monetario (total)", divider=True)
+      st.subheader("Comparación de ventas totales", divider=True)
 
     # Establecer las columnas para la visualización de los gráficos de la primera fila
-    c1, c2, c3, c4, c5 = st.columns(spec=[0.15, 0.15, 0.15, 0.15, 0.4])
+    c1, c2, c3, c4, c5, c6 = st.columns(spec=[0.12, 0.12, 0.12, 0.12, 0.12, 0.4])
       
     # Impresión de los gráficos de la primera fila
     with c1:
@@ -1021,10 +1041,12 @@ if selected == "5. Resultados obtenidos":
     with c2:
       st.metric(label="Transacciones totales", value=ss.transacciones_totales_3_meses, delta=ss.cambio_transacciones_ultimo_trimestre)
     with c3:
-      st.metric(label="Productos vendidos", value=ss.productos_vendidos_3_meses, delta=ss.cambio_productos_vendidos_ultimo_trimestre)
+      st.metric(label="Cantidad de productos", value=ss.cantidad_productos_vendidos_3_meses, delta=ss.cambio_cantidad_productos_vendidos_ultimo_trimestre)
     with c4:
-      st.metric(label="Clientes", value=ss.clientes_3_meses, delta=ss.cambio_clientes_ultimo_trimestre)
+      st.metric(label="Tipos de productos", value=ss.tipos_productos_vendidos_3_meses, delta=ss.cambio_tipos_productos_vendidos_ultimo_trimestre)
     with c5:
+      st.metric(label="Número de clientes", value=ss.clientes_3_meses, delta=ss.cambio_clientes_ultimo_trimestre)
+    with c6:
       st.pyplot(ss.fig4)
 
     ## Segunda fila ##
@@ -1035,7 +1057,7 @@ if selected == "5. Resultados obtenidos":
     with c1:
       st.subheader("Métricas RFM (promedios)", divider=True)
     with c2:
-      st.subheader("Score de los clientes (conteo, %)", divider=True)
+      st.subheader("Score de los clientes (cantidad)", divider=True)
     with c3:
       st.subheader("Score vs Recencia (promedio)", divider=True)
 
