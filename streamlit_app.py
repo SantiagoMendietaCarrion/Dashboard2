@@ -988,11 +988,11 @@ if selected == "5. Resultados obtenidos":
     # Gráfico de barras de los mejores productos 
     fig8, ax8 = plt.subplots(layout='constrained', figsize=(10,5))
     colores=['lightsteelblue', 'cornflowerblue', 'royalblue', 'mediumblue', 'darkblue']
-    x=data9_part1_mejores_productos_quantity_head2['Porcentaje']
+    x=data9_part1_mejores_productos_quantity_head2['Quantity']
     y=data9_part1_mejores_productos_quantity_head2['Description']
     ax8.barh(y=y,  width=x, color=colores)
     ax8.bar_label(ax8.containers[0], padding=3)
-    ax8.set_xlabel('Quantity Purchase predicted 1')
+    ax8.set_xlabel('Quantity (Purchase predicted 1)')
     ax8.set_ylabel('Product names')
     ax8.set_title('Products vs Quantity SVM Model-Escenario 2-Sin balanceo')
     ax8.set_xlim(0,2.25)
