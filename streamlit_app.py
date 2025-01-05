@@ -398,9 +398,9 @@ if selected == '4. Métricas de evaluación':
 
   # Inicializar las variables en st.session_state
   if "svm_df2" not in ss:
-    ss.pcp_df2 = ""
+    ss.svm_df2 = ""
   if "svm_report_df2_mod" not in ss:
-    ss.pcp_report_df2_mod = ""
+    ss.svm_report_df2_mod = ""
   if "fig1" not in ss:
     ss.fig1 = ""
   if "fig2" not in ss:
