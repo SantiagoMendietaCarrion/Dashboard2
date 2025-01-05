@@ -689,14 +689,14 @@ if selected == "5. Resultados obtenidos":
     data9_part1_6meses=data9_part1[(data9_part1['InvoiceDate'] >= data9_part1_fecha_minima_6meses) & (data9['InvoiceDate'] < data9_part1_fecha_minima_3meses)].reset_index(drop=True)
 
     # Resultados generales últimos 3 meses del dataset inicial parte 1
-    ventas_totales_3_meses=data9_part1_3meses['Revenue'].sum()  # Ventas totales últimos 3 meses
+    ventas_totales_3_meses=int(round(data9_part1_3meses['Revenue'].sum(),0))  # Ventas totales últimos 3 meses
     transacciones_totales_3_meses=len(data9_part1_3meses)       # Cantidad de transacciones (filas) últimos 3 meses
     cantidad_productos_vendidos_3_meses=data9_part1_3meses['Quantity'].sum()   # Productos vendidos en los últimos 3 meses
     tipos_productos_vendidos_3_meses=len(data9_part1_3meses.groupby('Description'))  # Tipos productos vendidos en los últimos 3 meses
     clientes_3_meses=len(data9_part1_3meses.groupby('CustomerID'))              # Número de clientes que han comprado en los últimos 3 meses
 
     # Resultados generales últimos 6 meses del dataset inicial parte 1
-    ventas_totales_6_meses=data9_part1_6meses['Revenue'].sum()  # Ventas totales últimos 6 meses
+    ventas_totales_6_meses=int(round(data9_part1_6meses['Revenue'].sum(),0))  # Ventas totales últimos 6 meses
     transacciones_totales_6_meses=len(data9_part1_6meses)       # Cantidad de transacciones (filas) últimos 6 meses
     cantidad_productos_vendidos_6_meses=data9_part1_6meses['Quantity'].sum()   # Productos vendidos en los últimos 6 meses
     tipos_productos_vendidos_6_meses=len(data9_part1_6meses.groupby('Description'))  # Productos vendidos en los últimos 6 meses
@@ -791,7 +791,7 @@ if selected == "5. Resultados obtenidos":
     ax5.set_title('RFM metrics SVM Model-Escenario 2-Sin balanceo')
     ax5.set_xticks(x + width, rfm_metrics)
     ax5.legend(loc='upper center', ncols=2)
-    ax5.set_ylim(0, 9000)
+    ax5.set_ylim(0, 10500)
 
     #### Gráficos de Score (count, percentage) ##### 
     # Dataframe del conteo y porcentaje del score de los clientes que se predijeron que no van a realizar una compra en los siguientes 90 días
@@ -995,7 +995,7 @@ if selected == "5. Resultados obtenidos":
     ax8.set_xlabel('Quantity (Purchase predicted 1)')
     ax8.set_ylabel('Product names')
     ax8.set_title('Products vs Quantity SVM Model-Escenario 2-Sin balanceo')
-    ax8.set_xlim(0,2.25)
+    ax8.set_xlim(0,3500)
 
     # Asignación de las variables obtenidas a las variables st.session_state
     ss.ventas_totales_3_meses = ventas_totales_3_meses
@@ -1057,7 +1057,7 @@ if selected == "5. Resultados obtenidos":
     with c1:
       st.subheader("Métricas RFM (promedios)", divider=True)
     with c2:
-      st.subheader("Score de los clientes (cantidad)", divider=True)
+      st.subheader("Score vs Cantidad de clientes", divider=True)
     with c3:
       st.subheader("Score vs Recencia (promedio)", divider=True)
 
