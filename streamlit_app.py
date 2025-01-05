@@ -397,9 +397,9 @@ if selected == '4. Métricas de evaluación':
   st.title('Visualización de las métricas de evaluación')
 
   # Inicializar las variables en st.session_state
-  if "pcp_df2" not in ss:
+  if "svm_df2" not in ss:
     ss.pcp_df2 = ""
-  if "pcp_report_df2_mod" not in ss:
+  if "svm_report_df2_mod" not in ss:
     ss.pcp_report_df2_mod = ""
   if "fig1" not in ss:
     ss.fig1 = ""
@@ -449,49 +449,49 @@ if selected == '4. Métricas de evaluación':
     test_Y2=test_Y.copy()
 
     # Dataframe con el valor real y el valor predecido
-    pcp_predictions2 = best_pcp_model2.predict(test_X2)  #Realizar la predicción
-    pcp_df2 = pd.DataFrame({'Valor real':test_Y2,'Valor predecido': pcp_predictions2}) #Crear dataframe (y_real, pcp_predictions)
+    svm_predictions2 = best_svm_model2.predict(test_X2)  #Realizar la predicción
+    svm_df2 = pd.DataFrame({'Valor real':test_Y2,'Valor predecido': svm_predictions2}) #Crear dataframe (y_real, pcp_predictions)
 
     # Matriz de confusión
-    pcp_cm2 = confusion_matrix(test_Y2, pcp_predictions2)
+    svm_cm2 = confusion_matrix(test_Y2, svm_predictions2)
 
     # Obtener el reporte de métricas de evaluación en formato de diccionario
     targets = ['0', '1']
-    pcp_report_dict2=classification_report(test_Y2, pcp_predictions2, target_names=targets, output_dict=True)
+    svm_report_dict2=classification_report(test_Y2, svm_predictions2, target_names=targets, output_dict=True)
 
     # Obtener la exactitud (accuracy) de los datos de prueba
-    pcp_accuracy_test2 = best_pcp_model2.score(test_X2, test_Y2)
+    svm_accuracy_test2 = best_svm_model2.score(test_X2, test_Y2)
 
     # Probabilidades o puntajes de confianza
-    pcp_probabilities2=best_pcp_model2.decision_function(test_X2)
+    svm_probabilities2=best_svm_model2.predict_proba(test_X2)[:,1]
 
     # Obtener AUC Score
-    pcp_auc_score2=roc_auc_score(test_Y2, pcp_probabilities2)
+    svm_auc_score2=roc_auc_score(test_Y2, svm_probabilities2)
 
     # Obtener Precision Score
-    pcp_average_precision_score2=average_precision_score(test_Y2, pcp_probabilities2)
+    svm_average_precision_score2=average_precision_score(test_Y2, svm_probabilities2)
 
     # Dataframe con los resultados de las métricas de evaluación
-    pcp_report_df2=pd.DataFrame(pcp_report_dict2)
-    pcp_report_df2.reset_index(inplace=True)
-    pcp_report_df2.drop(columns=['accuracy'], inplace=True)
-    pcp_report_df2.columns=['metric', 'class 0', 'class 1', 'macro avg', 'weighted avg']
-    accuracy_row=['accuracy', '0','0', pcp_accuracy_test2, '0']
-    auc_score_row=['auc_score', '0','0', pcp_auc_score2, '0']
-    precision_score_row=['precision_score', '0','0', pcp_average_precision_score2, '0']
-    pcp_report_df2.loc[2.1]=accuracy_row
-    pcp_report_df2.loc[2.2]=auc_score_row
-    pcp_report_df2.loc[2.3]=precision_score_row
-    pcp_report_df2.sort_index(inplace=True)
-    pcp_report_df2.reset_index(drop=True, inplace=True)
-    pcp_report_df2['class 0']=pcp_report_df2['class 0'].apply(lambda x: round(float(x),2))
-    pcp_report_df2['class 1']=pcp_report_df2['class 1'].apply(lambda x: round(float(x),2))
-    pcp_report_df2['macro avg']=pcp_report_df2['macro avg'].apply(lambda x: round(float(x),2))
-    pcp_report_df2['weighted avg']=pcp_report_df2['weighted avg'].apply(lambda x: round(float(x),2))
+    svm_report_df2=pd.DataFrame(svm_report_dict2)
+    svm_report_df2.reset_index(inplace=True)
+    svm_report_df2.drop(columns=['accuracy'], inplace=True)
+    svm_report_df2.columns=['metric', 'class 0', 'class 1', 'macro avg', 'weighted avg']
+    accuracy_row=['accuracy', '0','0', svm_accuracy_test2, '0']
+    auc_score_row=['auc_score', '0','0', svm_auc_score2, '0']
+    precision_score_row=['precision_score', '0','0', svm_average_precision_score2, '0']
+    svm_report_df2.loc[2.1]=accuracy_row
+    svm_report_df2.loc[2.2]=auc_score_row
+    svm_report_df2.loc[2.3]=precision_score_row
+    svm_report_df2.sort_index(inplace=True)
+    svm_report_df2.reset_index(drop=True, inplace=True)
+    svm_report_df2['class 0']=svm_report_df2['class 0'].apply(lambda x: round(float(x),2))
+    svm_report_df2['class 1']=svm_report_df2['class 1'].apply(lambda x: round(float(x),2))
+    svm_report_df2['macro avg']=svm_report_df2['macro avg'].apply(lambda x: round(float(x),2))
+    svm_report_df2['weighted avg']=svm_report_df2['weighted avg'].apply(lambda x: round(float(x),2))
 
-    # Obtener copia del dataframe pcp_report_df2 para reemplazar los ceros con NaN
-    pcp_report_df2_mod=pcp_report_df2.copy()
-    pcp_report_df2_mod.replace(0, np.nan, inplace=True)
+    # Obtener copia del dataframe svm_report_df2 para reemplazar los ceros con NaN
+    svm_report_df2_mod=svm_report_df2.copy()
+    svm_report_df2_mod.replace(0, np.nan, inplace=True)
 
     # Carpeta para guardar las imágenes
     save_folder_image = f'{working_dir}/saved_images'
@@ -499,10 +499,10 @@ if selected == '4. Métricas de evaluación':
     # Gráfico de barras agrupado: Precision, Recall, F1-Score. Accuracy, AUC-Score, Precision-Score
     evaluation_metrics = ("Precision", "Recall", "F1-Score", "Accuracy", "AUC-Score", "Precision-Score")
     class_metrics = {
-        'class 0': pcp_report_df2.loc[0:5,"class 0"],
-        'class 1': pcp_report_df2.loc[0:5,"class 1"],
-        'macro avg': pcp_report_df2.loc[0:5,"macro avg"],
-        'weighted avg': pcp_report_df2.loc[0:5,"weighted avg"],
+        'class 0': svm_report_df2.loc[0:5,"class 0"],
+        'class 1': svm_report_df2.loc[0:5,"class 1"],
+        'macro avg': svm_report_df2.loc[0:5,"macro avg"],
+        'weighted avg': svm_report_df2.loc[0:5,"weighted avg"],
     }
 
     x = np.arange(len(evaluation_metrics))  # the label locations
@@ -525,61 +525,61 @@ if selected == '4. Métricas de evaluación':
     # Add some text for labels, title and custom x-axis tick labels, etc.
     ax1.set_xlabel('Metrics')
     ax1.set_ylabel('Values (0 a 1)')
-    ax1.set_title('Evaluation metrics Perceptron Model-Escenario 2-Sin balanceo')
+    ax1.set_title('Evaluation metrics SVM Model-Escenario 2-Sin balanceo')
     ax1.set_xticks(x + width, evaluation_metrics)
     ax1.legend(loc='upper center', ncols=4)
     ax1.set_ylim(0, 1.1)
-    fig1_name='pcp_barplot_evaluation_metrics2.png'
+    fig1_name='svm_barplot_evaluation_metrics2.png'
     save_path_fig1 = Path(save_folder_image, fig1_name)
     fig1.savefig(save_path_fig1)
     #pcp_barplot_evaluation_metrics2 = Image.open('pcp_barplot_evaluation_metrics2.png')
       
     # Obtener Curva ROC
     fig2, ax2 = plt.subplots(layout='constrained', figsize=(5,5))
-    fpr, tpr, thresholds = roc_curve(test_Y2, pcp_probabilities2)
-    pcp_auc_score2=round(roc_auc_score(test_Y2, pcp_probabilities2),2)
-    pcp_auc_score2_label="Perceptron (AUC= "+str(pcp_auc_score2)+")"
-    ax2.plot(fpr, tpr, label=pcp_auc_score2_label)
+    fpr, tpr, thresholds = roc_curve(test_Y2, svm_probabilities2)
+    svm_auc_score2=round(roc_auc_score(test_Y2, svm_probabilities2),2)
+    svm_auc_score2_label="SVM (AUC= "+str(svm_auc_score2)+")"
+    ax2.plot(fpr, tpr, label=svm_auc_score2_label)
     ax2.set_xlabel('False Positive Rate (Positive label: 1)')
     ax2.set_ylabel('True Positive Rate (Positive label: 1)')
-    ax2.set_title('ROC Curve Perceptron Model-Escenario 2-Sin balanceo')
+    ax2.set_title('ROC Curve SVM Model-Escenario 2-Sin balanceo')
     ax2.legend(loc='lower right', ncols=1)
     ax2.set_xlim(-0.01, 1.01)
     ax2.set_ylim(-0.01, 1.01)
-    fig2_name='pcp_roc_curve2.png'
+    fig2_name='svm_roc_curve2.png'
     save_path_fig2 = Path(save_folder_image, fig2_name)
     fig2.savefig(save_path_fig2)
     #pcp_roc_curve2 = Image.open('pcp_roc_curve2.png')
 
     # Obtener Curva Precision-Recall
     fig3, ax3 = plt.subplots(layout='constrained', figsize=(5,5))
-    precision, recall, thresholds = precision_recall_curve(test_Y2, pcp_probabilities2)
-    pcp_precision_score2=round(average_precision_score(test_Y2, pcp_probabilities2),2)
-    pcp_precision_score2_label="Perceptron (AP= "+str(pcp_precision_score2)+")"
-    ax3.plot(recall, precision, label=pcp_precision_score2_label)
+    precision, recall, thresholds = precision_recall_curve(test_Y2, svm_probabilities2)
+    svm_precision_score2=round(average_precision_score(test_Y2, svm_probabilities2),2)
+    svm_precision_score2_label="SVM (AP= "+str(svm_precision_score2)+")"
+    ax3.plot(recall, precision, label=svm_precision_score2_label)
     ax3.set_xlabel('Recall (Positive label: 1)')
     ax3.set_ylabel('Precision (Positive label: 1)')
-    ax3.set_title('P-R Curve Perceptron Model-Escenario 2-Sin balanceo')
+    ax3.set_title('P-R Curve SVM Model-Escenario 2-Sin balanceo')
     ax3.legend(loc='lower left', ncols=1)
     ax3.set_xlim(-0.01, 1.01)
     ax3.set_ylim(-0.01, 1.01)
-    fig3_name='pcp_precision_recall_curve2.png'
+    fig3_name='svm_precision_recall_curve2.png'
     save_path_fig3 = Path(save_folder_image, fig3_name)
     fig3.savefig(save_path_fig3)
     #pcp_precision_recall_curve2 = Image.open('pcp_precision_recall_curve2.png')
 
     # Asignación de las variables obtenidas a las variables st.session_state
-    ss.pcp_df2 = pcp_df2
-    ss.pcp_report_df2_mod = pcp_report_df2_mod
+    ss.svm_df2 = svm_df2
+    ss.svm_report_df2_mod = svm_report_df2_mod
     ss.fig1 = fig1
     ss.fig2 = fig2
     ss.fig3 = fig3
    
   # Realizar la visualización de las métricas de evaluación cuando se encuentran creadas
-  if ss.pcp_report_df2_mod is not "":    
+  if ss.svm_report_df2_mod is not "":    
     # Mostrar las métricas de evaluación
     st.header("Dataframe", divider=True)
-    st.dataframe(ss.pcp_report_df2_mod)
+    st.dataframe(ss.svm_report_df2_mod)
     st.header("Gráfico de barras", divider=True)
     st.pyplot(ss.fig1)
     st.header("Curva ROC", divider=True)
@@ -639,20 +639,20 @@ if selected == "5. Resultados obtenidos":
     data9_part1 = ss.data9_part1
     data9_part2 = ss.data9_part2 
     data_nuevo17 = ss.data_nuevo17 
-    pcp_df2 = ss.pcp_df2
+    svm_df2 = ss.svm_df2
 
     #### Predicciones del algoritmo Dataset inicial #####
     # Dataframe de las predicciones (purchase predicted 0)
-    pcp_df2_preditecd0=pcp_df2.loc[pcp_df2['Valor predecido']==0, pcp_df2.columns]
+    svm_df2_preditecd0=svm_df2.loc[svm_df2['Valor predecido']==0, svm_df2.columns]
 
     # Dataframe de las predicciones (purchase predicted 1)
-    pcp_df2_preditecd1=pcp_df2.loc[pcp_df2['Valor predecido']==1, pcp_df2.columns]
+    svm_df2_preditecd1=svm_df2.loc[svm_df2['Valor predecido']==1, svm_df2.columns]
 
     # Consumidores que se predijeron que no van a realizar una compra en los siguientes 90 días
-    purchase_predicted0=data_nuevo17.loc[pcp_df2_preditecd0.index, data_nuevo17.columns]
+    purchase_predicted0=data_nuevo17.loc[svm_df2_preditecd0.index, data_nuevo17.columns]
 
     # Consumidores que se predijeron que si van a realizar una compra en los siguientes 90 días
-    purchase_predicted1=data_nuevo17.loc[pcp_df2_preditecd1.index, data_nuevo17.columns]
+    purchase_predicted1=data_nuevo17.loc[svm_df2_preditecd1.index, data_nuevo17.columns]
 
     #### Predicciones del algoritmo Dataset nuevo #####
     # Copia del dataset inicial
@@ -734,7 +734,7 @@ if selected == "5. Resultados obtenidos":
     ax4.plot(x, y2, label = "Predicted_Purchase_1", color='red')
     ax4.set_xlabel('Date (Year-Month)')
     ax4.set_ylabel('Monetary_Value (sum)')
-    ax4.set_title('Date vs Monetary_Value (sum) Perceptron Model-Escenario 2-Sin balanceo')
+    ax4.set_title('Date vs Monetary_Value (sum) SVM Model-Escenario 2-Sin balanceo')
     ax4.legend(loc='upper center', ncols=2)
     ax4.set_ylim(0, 200000)
 
@@ -781,7 +781,7 @@ if selected == "5. Resultados obtenidos":
     # Add some text for labels, title and custom x-axis tick labels, etc.
     ax5.set_xlabel('RFM Metrics')
     ax5.set_ylabel('mean values')
-    ax5.set_title('RFM metrics Perceptron Model-Escenario 2-Sin balanceo')
+    ax5.set_title('RFM metrics SVM Model-Escenario 2-Sin balanceo')
     ax5.set_xticks(x + width, rfm_metrics)
     ax5.legend(loc='upper center', ncols=2)
     ax5.set_ylim(0, 9000)
@@ -832,7 +832,7 @@ if selected == "5. Resultados obtenidos":
     # Add some text for labels, title and custom x-axis tick labels, etc.
     ax6.set_xlabel('Score')
     ax6.set_ylabel('Count')
-    ax6.set_title('Score vs count Perceptron Model-Escenario 2-Sin balanceo')
+    ax6.set_title('Score vs count SVM Model-Escenario 2-Sin balanceo')
     ax6.set_xticks(x + width, score_values)
     ax6.legend(loc='upper center', ncols=2)
     ax6.set_ylim(0, 500)
@@ -886,7 +886,7 @@ if selected == "5. Resultados obtenidos":
     # Add some text for labels, title and custom x-axis tick labels, etc.
     ax7.set_xlabel('Score')
     ax7.set_ylabel('Recency mean')
-    ax7.set_title('Score vs Recency Perceptron Model-Escenario 2-Sin balanceo')
+    ax7.set_title('Score vs Recency SVM Model-Escenario 2-Sin balanceo')
     ax7.set_xticks(x + width, score_values)
     ax7.legend(loc='upper center', ncols=2)
     ax7.set_ylim(0, 600)
@@ -918,7 +918,7 @@ if selected == "5. Resultados obtenidos":
     # Add some text for labels, title and custom x-axis tick labels, etc.
     ax9.set_xlabel('Score')
     ax9.set_ylabel('Frequency mean')
-    ax9.set_title('Score vs Frequency Perceptron Model-Escenario 2-Sin balanceo')
+    ax9.set_title('Score vs Frequency SVM Model-Escenario 2-Sin balanceo')
     ax9.set_xticks(x + width, score_values)
     ax9.legend(loc='upper center', ncols=2)
     ax9.set_ylim(0, 5000)
@@ -950,7 +950,7 @@ if selected == "5. Resultados obtenidos":
     # Add some text for labels, title and custom x-axis tick labels, etc.
     ax10.set_xlabel('Score')
     ax10.set_ylabel('Monetary_Value mean')
-    ax10.set_title('Score vs Monetary_Value Perceptron Model-Escenario 2-Sin balanceo')
+    ax10.set_title('Score vs Monetary_Value SVM Model-Escenario 2-Sin balanceo')
     ax10.set_xticks(x + width, score_values)
     ax10.legend(loc='upper center', ncols=2)
     ax10.set_ylim(0, 140000)
@@ -976,7 +976,7 @@ if selected == "5. Resultados obtenidos":
     ax8.bar_label(ax8.containers[0], padding=3)
     ax8.set_xlabel('Total sales (%)')
     ax8.set_ylabel('Product names')
-    ax8.set_title('Products vs Total sales (%) Perceptron Model-Escenario 2-Sin balanceo')
+    ax8.set_title('Products vs Total sales (%) SVM Model-Escenario 2-Sin balanceo')
     ax8.set_xlim(0,2.25)
 
     # Asignación de las variables obtenidas a las variables st.session_state
