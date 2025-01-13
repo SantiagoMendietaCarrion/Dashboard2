@@ -399,8 +399,8 @@ if selected == '4. Métricas de evaluación':
   # Inicializar las variables en st.session_state
   if "svm_df2" not in ss:
     ss.svm_df2 = ""
-  if "svm_report_df2_mod" not in ss:
-    ss.svm_report_df2_mod = ""
+  if "svm_report_df2_mod2" not in ss:
+    ss.svm_report_df2_mod2 = ""
   if "fig1" not in ss:
     ss.fig1 = ""
   if "fig2" not in ss:
@@ -489,27 +489,37 @@ if selected == '4. Métricas de evaluación':
     svm_report_df2['macro avg']=svm_report_df2['macro avg'].apply(lambda x: round(float(x),2))
     svm_report_df2['weighted avg']=svm_report_df2['weighted avg'].apply(lambda x: round(float(x),2))
 
-    # Obtener copia del dataframe svm_report_df2 para reemplazar los ceros con NaN
+    # Modificacion del dataframe con los resultados de las métricas de evaluación
     svm_report_df2_mod=svm_report_df2.copy()
-    svm_report_df2_mod.replace(0, np.nan, inplace=True)
+    svm_report_df2_mod["model"]=svm_report_df2_mod["macro avg"]
+    svm_report_df2_mod.loc[5,"metric"]="ap_score"
+    svm_report_df2_mod.loc[3, "macro avg"]=0
+    svm_report_df2_mod.loc[0:2,"model"]=0
+    svm_report_df2_mod.loc[4:5,"model"]=0
+    svm_report_df2_mod=svm_report_df2_mod.iloc[:, [0,1,2,5,3,4]]
+
+    # Obtener copia del dataframe svm_report_df2 para reemplazar los ceros con NaN
+    svm_report_df2_mod2=svm_report_df2_mod.copy()
+    svm_report_df2_mod2.replace(0, np.nan, inplace=True)
 
     # Carpeta para guardar las imágenes
     save_folder_image = f'{working_dir}/saved_images'
     
     # Gráfico de barras agrupado: Precision, Recall, F1-Score. Accuracy, AUC-Score, Precision-Score
-    evaluation_metrics = ("Precision", "Recall", "F1-Score", "Accuracy", "AUC-Score", "Precision-Score")
+    evaluation_metrics = ("Precision", "Recall", "F1-Score", "Accuracy", "AUC-Score", "AP-Score")
     class_metrics = {
-        'class 0': svm_report_df2.loc[0:5,"class 0"],
-        'class 1': svm_report_df2.loc[0:5,"class 1"],
-        'macro avg': svm_report_df2.loc[0:5,"macro avg"],
-        'weighted avg': svm_report_df2.loc[0:5,"weighted avg"],
+        'class 0': svm_report_df2_mod.loc[0:5,"class 0"],
+        'class 1': svm_report_df2_mod.loc[0:5,"class 1"],
+        'model': svm_report_df2_mod.loc[0:5,"model"],
+        'macro avg': svm_report_df2_mod.loc[0:5,"macro avg"],
+        'weighted avg': svm_report_df2_mod.loc[0:5,"weighted avg"],
     }
 
     x = np.arange(len(evaluation_metrics))  # the label locations
     width = 0.15  # the width of the bars
     multiplier = 0
     i=0
-    colors=['blue', 'red', 'orange', 'green']
+    colors=['blue', 'red', 'dodgerblue', 'orange', 'green']
 
     fig1, ax1 = plt.subplots(layout='constrained', figsize=(15,5))
 
@@ -518,7 +528,7 @@ if selected == '4. Métricas de evaluación':
         rects = ax1.bar(x + offset, measurement, width, label=attribute, color=colors[i])
         ax1.bar_label(rects, fmt=lambda x: x if x > 0 else '', padding=3)
         multiplier+= 1
-        if i==3:
+        if i==5:
           i=0
         else:
           i+=1
@@ -527,12 +537,12 @@ if selected == '4. Métricas de evaluación':
     ax1.set_ylabel('Values (0 a 1)')
     ax1.set_title('Evaluation metrics SVM Model-Escenario 2-Sin balanceo')
     ax1.set_xticks(x + width, evaluation_metrics)
-    ax1.legend(loc='upper center', ncols=4)
+    ax1.legend(loc='upper center', ncols=5)
     ax1.set_ylim(0, 1.1)
     fig1_name='svm_barplot_evaluation_metrics2.png'
     save_path_fig1 = Path(save_folder_image, fig1_name)
     fig1.savefig(save_path_fig1)
-    #pcp_barplot_evaluation_metrics2 = Image.open('pcp_barplot_evaluation_metrics2.png')
+    #svm_barplot_evaluation_metrics2 = Image.open('svm_barplot_evaluation_metrics2.png')
       
     # Obtener Curva ROC
     fig2, ax2 = plt.subplots(layout='constrained', figsize=(5,5))
@@ -549,7 +559,7 @@ if selected == '4. Métricas de evaluación':
     fig2_name='svm_roc_curve2.png'
     save_path_fig2 = Path(save_folder_image, fig2_name)
     fig2.savefig(save_path_fig2)
-    #pcp_roc_curve2 = Image.open('pcp_roc_curve2.png')
+    #svm_roc_curve2 = Image.open('svm_roc_curve2.png')
 
     # Obtener Curva Precision-Recall
     fig3, ax3 = plt.subplots(layout='constrained', figsize=(5,5))
@@ -570,16 +580,16 @@ if selected == '4. Métricas de evaluación':
 
     # Asignación de las variables obtenidas a las variables st.session_state
     ss.svm_df2 = svm_df2
-    ss.svm_report_df2_mod = svm_report_df2_mod
+    ss.svm_report_df2_mod2 = svm_report_df2_mod2
     ss.fig1 = fig1
     ss.fig2 = fig2
     ss.fig3 = fig3
    
   # Realizar la visualización de las métricas de evaluación cuando se encuentran creadas
-  if ss.svm_report_df2_mod is not "":    
+  if ss.svm_report_df2_mod2 is not "":    
     # Mostrar las métricas de evaluación
     st.header("Dataframe", divider=True)
-    st.dataframe(ss.svm_report_df2_mod)
+    st.dataframe(ss.svm_report_df2_mod2)
     st.header("Gráfico de barras", divider=True)
     st.pyplot(ss.fig1)
     st.header("Curva ROC", divider=True)
