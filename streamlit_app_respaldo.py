@@ -62,6 +62,8 @@ if selected == '1. Ingreso de archivos':
     ss.file_list_size = ""
       
   # Carga del archivo csv
+  ##ss.loaded_csv = st.file_uploader("Escoja el archivo CSV")
+  ##ss.loaded_csv=uploader("Escoja el archivo CSV", key="chunk_uploader", chunk_size=21)
   ss.loaded_csv = st.file_uploader("Escoja el archivo CSV", type='csv', accept_multiple_files=True)
 
   # Asignación condicional del archivo csv a una nueva variable
@@ -586,15 +588,17 @@ if selected == '4. Métricas de evaluación':
   # Realizar la visualización de las métricas de evaluación cuando se encuentran creadas
   if ss.svm_report_df2_mod2 is not "":    
     # Mostrar las métricas de evaluación
-    st.header("Dataframe de las métricas", divider=True)
+    st.header("Dataframe", divider=True)
     st.dataframe(ss.svm_report_df2_mod2)
-    st.header("Gráfico de barras de las métricas", divider=True)
+    st.header("Gráfico de barras", divider=True)
     st.pyplot(ss.fig1)
-    st.header("Curva ROC y Curva Precision-Recall", divider=True)
-    c1, c2 = st.columns(spec=2)
+    st.header("Curva ROC", divider=True)
+    c1, c2 = st.columns(2)
     with c1:
       st.pyplot(ss.fig2)
-    with c2:
+    st.header("Curva Precision-Recall", divider=True)
+    c1, c2 = st.columns(2)
+    with c1:
       st.pyplot(ss.fig3)
 
 # Ventana para la visualización de los resultados obtenidos
