@@ -34,7 +34,7 @@ best_svm_model2 = pickle.load(open(f'{working_dir}/saved_models/best_svm_model2.
 
 # Barra lateral para la navegación
 with st.sidebar:
-    selected = option_menu('Sistema de predicción de compra',
+    selected = option_menu('Modelo de predicción de compra',
 
                            ['1. Ingreso de archivos',
                             '2. Visualización dataset',
